@@ -76,13 +76,35 @@ class VideoPosterTest extends TestCase
         }
     }
 
-    protected function assertYoutubeVideoUploadExpectionCallsLogger(Exception $exception, string $loggerMethod): void
+    /**
+     * @dataProvider provideThumbnailUploaderExceptions
+     */
+    public function testYoutubeVideoUploadSucceededAndVideoUpdateSucceededAndThumbnailUploadFailed(
+        Exception $thumbnailUploaderException
+    ): void
     {
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects(self::once())->method($loggerMethod);
+
+        $videoId = 'yIucwdfnZIM';
 
         $poster = new VideoPoster(
-            $logger,
+            $this->createLoggerMockCalledOnceErrorAndNeverEmergency(),
+            $this->createPosterMockReturnsVideoId($videoId),
+            $this->createMockMethodCalledOnce(VideoUpdater::class, 'update'),
+            $this->createMockThrowsException(
+                ThumbnailUploader::class,
+                'upload',
+                $thumbnailUploaderException
+            )
+        );
+
+        $this->assertPosterReturnsVideoId($videoId, $poster);
+    }
+
+    protected function assertYoutubeVideoUploadExpectionCallsLogger(Exception $exception, string $loggerMethod): void
+    {
+
+        $poster = new VideoPoster(
+            $this->createMockMethodCalledOnce(LoggerInterface::class, $loggerMethod),
             $this->createMockThrowsException(Poster::class, 'post', $exception),
             $this->createNeverCalledMock(VideoUpdater::class),
             $this->createNeverCalledMock(ThumbnailUploader::class)
@@ -142,6 +164,17 @@ class VideoPosterTest extends TestCase
         return $mock;
     }
 
+    protected function createMockMethodCalledOnce(
+        string $originalClassName,
+        string $methodName
+    ): MockObject
+    {
+        $mock = $this->createMock($originalClassName);
+        $mock->expects(self::once())->method($methodName);
+
+        return $mock;
+    }
+
     protected function createPosterMockReturnsVideoId(
         string $videoId
     ): Poster
@@ -154,6 +187,15 @@ class VideoPosterTest extends TestCase
         ;
 
         return $poster;
+    }
+
+    protected function createLoggerMockCalledOnceErrorAndNeverEmergency(): LoggerInterface
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects(self::never())->method('emergency');
+        $logger->expects(self::once())->method('error');
+
+        return $logger;
     }
 
     /**
