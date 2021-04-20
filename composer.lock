@@ -4,8 +4,46 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aea408054e6e46ead776ddd37f731328",
+    "content-hash": "2b316553a22f23f63f9b0b0fa28d5330",
     "packages": [
+        {
+            "name": "pierreminiggio/google-api-get-access-token-from-refresh-token",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pierreminiggio/php-google-api-get-access-token-from-refresh-token.git",
+                "reference": "b5f9b47a26adfd6bfe59d5f37aab87f45319f1ef"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pierreminiggio/php-google-api-get-access-token-from-refresh-token/zipball/b5f9b47a26adfd6bfe59d5f37aab87f45319f1ef",
+                "reference": "b5f9b47a26adfd6bfe59d5f37aab87f45319f1ef",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2 || ^8.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PierreMiniggio\\GoogleTokenRefresher\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Pierre MINIGGIO",
+                    "email": "pierre@miniggiodev.fr"
+                }
+            ],
+            "description": "Get Google API Access Token using your Refresh Token",
+            "support": {
+                "issues": "https://github.com/pierreminiggio/php-google-api-get-access-token-from-refresh-token/issues",
+                "source": "https://github.com/pierreminiggio/php-google-api-get-access-token-from-refresh-token/tree/1.1.0"
+            },
+            "time": "2021-04-20T19:31:14+00:00"
+        },
         {
             "name": "pierreminiggio/heropost-youtube-posting",
             "version": "dev-main",
@@ -1976,6 +2014,7 @@
         "pierreminiggio/heropost-youtube-posting": 20,
         "pierreminiggio/youtube-thumbnail-uploader": 20,
         "pierreminiggio/youtube-video-updater": 20,
+        "pierreminiggio/google-api-get-access-token-from-refresh-token": 20,
         "phpunit/phpunit": 20
     },
     "prefer-stable": false,

@@ -4,6 +4,7 @@ composer require pierreminiggio/heropost-and-youtube-api-based-video-poster
 ```
 
 ```php
+use PierreMiniggio\GoogleTokenRefresher\GoogleClient;
 use PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster\Video;
 use PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster\VideoPosterFactory;
 use PierreMiniggio\HeropostYoutubePosting\YoutubeCategoriesEnum;
@@ -77,6 +78,10 @@ $poster->post(
         'video.mp4',
         'thumbnail.png'
     ),
-    'accessToken'
+    new GoogleClient(
+        'clientId',
+        'clientSecret',
+        'refreshToken'
+    )
 );
 ```

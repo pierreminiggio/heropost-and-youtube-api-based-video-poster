@@ -5,6 +5,8 @@ namespace PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPosterTest;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PierreMiniggio\GoogleTokenRefresher\AccessTokenProvider;
+use PierreMiniggio\GoogleTokenRefresher\GoogleClient;
 use PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster\Video;
 use PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster\VideoPoster;
 use PierreMiniggio\HeropostYoutubePosting\Exception\AccountNotSetupOrQuotaExceededException;
@@ -59,6 +61,7 @@ class VideoPosterTest extends TestCase
                 $poster = new VideoPoster(
                     $logger,
                     $this->createPosterMockReturnsVideoId($videoId),
+                    $this->createTokenProviderMockReturnsToken('accessToken'),
                     $this->createMockThrowsException(
                         VideoUpdater::class,
                         'update',
@@ -89,6 +92,7 @@ class VideoPosterTest extends TestCase
         $poster = new VideoPoster(
             $this->createLoggerMockCalledOnceErrorAndNeverEmergency(),
             $this->createPosterMockReturnsVideoId($videoId),
+            $this->createTokenProviderMockReturnsToken('accessToken'),
             $this->createMockMethodCalledOnce(VideoUpdater::class, 'update'),
             $this->createMockThrowsException(
                 ThumbnailUploader::class,
@@ -113,6 +117,7 @@ class VideoPosterTest extends TestCase
         $poster = new VideoPoster(
             $this->createLoggerMockCalledOnceErrorAndNeverEmergency(),
             $this->createPosterMockReturnsVideoId($videoId),
+            $this->createTokenProviderMockReturnsToken('accessToken'),
             $this->createMockThrowsException(
                 VideoUpdater::class,
                 'update',
@@ -130,6 +135,7 @@ class VideoPosterTest extends TestCase
         $poster = new VideoPoster(
             $this->createMockMethodCalledOnce(LoggerInterface::class, $loggerMethod),
             $this->createMockThrowsException(Poster::class, 'post', $exception),
+            $this->createNeverCalledMock(AccessTokenProvider::class),
             $this->createNeverCalledMock(VideoUpdater::class),
             $this->createNeverCalledMock(ThumbnailUploader::class)
         );
@@ -164,7 +170,11 @@ class VideoPosterTest extends TestCase
                 'video.mp4',
                 'thumbnail.png'
             ),
-            'accessToken'
+            new GoogleClient(
+                'clientId',
+                'clientSecret',
+                'refreshToken'
+            )
         ));
     }
 
@@ -203,14 +213,38 @@ class VideoPosterTest extends TestCase
         string $videoId
     ): Poster
     {
-        $poster = $this->createMock(Poster::class);
-        $poster
+        return $this->createMockMethodCalledOnceWilLReturn(
+            Poster::class,
+            'post',
+            $videoId
+        );
+    }
+
+    protected function createTokenProviderMockReturnsToken(
+        string $accessToken
+    ): AccessTokenProvider
+    {
+        return $this->createMockMethodCalledOnceWilLReturn(
+            AccessTokenProvider::class,
+            'getFromClient',
+            $accessToken
+        );
+    }
+
+    protected function createMockMethodCalledOnceWilLReturn(
+        string $originalClassName,
+        string $methodName,
+        mixed $value
+    ): MockObject
+    {
+        $mock = $this->createMock($originalClassName);
+        $mock
             ->expects(self::once())
-            ->method('post')
-            ->willReturn($videoId)
+            ->method($methodName)
+            ->willReturn($value)
         ;
 
-        return $poster;
+        return $mock;
     }
 
     protected function createLoggerMockCalledOnceErrorAndNeverEmergency(): LoggerInterface

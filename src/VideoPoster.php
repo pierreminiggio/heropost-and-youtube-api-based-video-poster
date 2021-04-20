@@ -3,6 +3,8 @@
 namespace PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster;
 
 use Exception;
+use PierreMiniggio\GoogleTokenRefresher\AccessTokenProvider;
+use PierreMiniggio\GoogleTokenRefresher\GoogleClient;
 use PierreMiniggio\HeropostYoutubePosting\Exception\HeropostConfigurationException;
 use PierreMiniggio\HeropostYoutubePosting\Exception\MaybeAlreadyPostedButScrapingException;
 use PierreMiniggio\HeropostYoutubePosting\Exception\ScrapingException;
@@ -18,6 +20,7 @@ class VideoPoster
     public function __construct(
         private LoggerInterface $logger,
         private Poster $heropostPoster,
+        private AccessTokenProvider $tokenProvider,
         private VideoUpdater $videoUpdater,
         private ThumbnailUploader $thumbnailUploader,
     )
@@ -29,7 +32,7 @@ class VideoPoster
         string $herpostPassword,
         string $youtubeChannelId,
         Video $video,
-        string $accessToken
+        GoogleClient $client
     ): ?string
     {
 
@@ -54,6 +57,15 @@ class VideoPoster
 
             return null;
         }
+
+        try {
+            $accessToken = $this->tokenProvider->getFromClient($client);
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage(), $e->getTrace());
+
+            return null;
+        }
+        
 
         try {
             $this->videoUpdater->update(
