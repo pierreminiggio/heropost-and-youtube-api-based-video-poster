@@ -55,16 +55,10 @@ class VideoPosterTest extends TestCase
                 $logger->expects(self::exactly(2))->method('error');
 
                 $videoId = 'yIucwdfnZIM';
-                $heropostPoster = $this->createMock(Poster::class);
-                $heropostPoster
-                    ->expects(self::once())
-                    ->method('post')
-                    ->willReturn($videoId)
-                ;
 
                 $poster = new VideoPoster(
                     $logger,
-                    $heropostPoster,
+                    $this->createPosterMockReturnsVideoId($videoId),
                     $this->createMockThrowsException(
                         VideoUpdater::class,
                         'update',
@@ -146,6 +140,20 @@ class VideoPosterTest extends TestCase
         $mock->expects(self::once())->method($methodName)->willThrowException($exception);
 
         return $mock;
+    }
+
+    protected function createPosterMockReturnsVideoId(
+        string $videoId
+    ): Poster
+    {
+        $poster = $this->createMock(Poster::class);
+        $poster
+            ->expects(self::once())
+            ->method('post')
+            ->willReturn($videoId)
+        ;
+
+        return $poster;
     }
 
     /**
