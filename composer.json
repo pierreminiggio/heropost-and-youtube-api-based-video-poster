@@ -1,0 +1,37 @@
+{
+    "name": "pierreminiggio/heropost-and-youtube-api-based-video-poster",
+    "description": "",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Pierre MINIGGIO",
+            "email": "pierre@miniggiodev.fr"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=8.0.0",
+        "psr/log": "1.1.x-dev",
+        "pierreminiggio/heropost-youtube-posting": "dev-main",
+        "pierreminiggio/youtube-thumbnail-uploader": "dev-main",
+        "pierreminiggio/google-api-get-access-token-from-refresh-token": "dev-main",
+        "pierreminiggio/youtube-video-updater": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "PierreMiniggio\\HeropostAndYoutubeAPIBasedVideoPoster\\": "src/",
+            "PierreMiniggio\\HeropostAndYoutubeAPIBasedVideoPosterTest\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "10.0.x-dev"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "bash post-install.sh"
+        ]
+    },
+    "scripts-descriptions": {
+        "test": "Run all tests!"
+    }
+}
