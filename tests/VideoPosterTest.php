@@ -100,6 +100,30 @@ class VideoPosterTest extends TestCase
         $this->assertPosterReturnsVideoId($videoId, $poster);
     }
 
+    /**
+     * @dataProvider provideThumbnailUploaderExceptions
+     */
+    public function testYoutubeVideoUploadSucceededAndVideoUpdateFailedAndThumbnailUploadSucceeded(
+        Exception $videoUpdaterExceptions
+    ): void
+    {
+
+        $videoId = 'yIucwdfnZIM';
+
+        $poster = new VideoPoster(
+            $this->createLoggerMockCalledOnceErrorAndNeverEmergency(),
+            $this->createPosterMockReturnsVideoId($videoId),
+            $this->createMockThrowsException(
+                VideoUpdater::class,
+                'update',
+                $videoUpdaterExceptions
+            ),
+            $this->createMockMethodCalledOnce(ThumbnailUploader::class, 'upload'),
+        );
+
+        $this->assertPosterReturnsVideoId($videoId, $poster);
+    }
+
     protected function assertYoutubeVideoUploadExpectionCallsLogger(Exception $exception, string $loggerMethod): void
     {
 
