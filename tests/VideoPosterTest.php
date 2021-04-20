@@ -49,6 +49,11 @@ class VideoPosterTest extends TestCase
             $thumbnailUploader
         );
 
+        $this->assertPosterReturnsNull($poster);
+    }
+
+    protected function assertPosterReturnsNull(VideoPoster $poster): void
+    {
         self::assertSame(null, $poster->postUsingAccessToken(
             'login',
             'password',
