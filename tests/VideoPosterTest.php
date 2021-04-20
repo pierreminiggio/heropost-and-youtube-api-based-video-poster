@@ -15,44 +15,71 @@ use PierreMiniggio\HeropostYoutubePosting\Exception\UnknownHeropostException;
 use PierreMiniggio\HeropostYoutubePosting\Poster;
 use PierreMiniggio\HeropostYoutubePosting\YoutubeCategoriesEnum;
 use PierreMiniggio\HeropostYoutubePosting\YoutubeVideo;
+use PierreMiniggio\YoutubeThumbnailUploader\Exception\BadVideoIdException as ThumbnailUploaderBadVideoIdException;
 use PierreMiniggio\YoutubeThumbnailUploader\ThumbnailUploader;
+use PierreMiniggio\YoutubeVideoUpdater\Exception\BadVideoIdException as VideoUpdaterBadVideoIdException;
 use PierreMiniggio\YoutubeVideoUpdater\VideoUpdater;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class VideoPosterTest extends TestCase
 {
 
     /**
-     * @dataProvider provideBrokenVideoUploadExceptions
+     * @dataProvider provideBrokenYoutubeVideoUploadExceptions
      */
-    public function testBrokenVideoUpload(Exception $exception): void
+    public function testBrokenYoutubeVideoUpload(Exception $exception): void
     {
-        $this->assertVideoUploadExpectionCallsLogger($exception, 'emergency');
+        $this->assertYoutubeVideoUploadExpectionCallsLogger($exception, 'emergency');
     }
 
     /**
-     * @dataProvider provideMaybeBrokenVideoUploadExceptions
+     * @dataProvider provideMaybeBrokenYoutubeVideoUploadExceptions
      */
-    public function testMaybeBrokenVideoUpload(Exception $exception): void
+    public function testMaybeBrokenYoutubeVideoUpload(Exception $exception): void
     {
-        $this->assertVideoUploadExpectionCallsLogger($exception, 'error');
+        $this->assertYoutubeVideoUploadExpectionCallsLogger($exception, 'error');
     }
 
-    protected function assertVideoUploadExpectionCallsLogger(Exception $exception, string $loggerMethod): void
+    // public function testYoutubeVideoUploadSucceededAndVideoUpdateFailedAndThumbnailUploadFailed(): void
+    // {
+    //     $logger = $this->createMock(LoggerInterface::class);
+    //     $logger->expects(self::never())->method('emergency');
+
+    //     $videoId = 'yIucwdfnZIM';
+    //     $heropostPoster = $this->createMock(Poster::class);
+    //     $heropostPoster
+    //         ->expects(self::once())
+    //         ->method('post')
+    //         ->willReturn($videoId)
+    //     ;
+
+    //     $poster = new VideoPoster(
+    //         $logger,
+    //         $heropostPoster,
+    //         $this->createMockThrowsException(
+    //             VideoUpdater::class,
+    //             'update',
+    //             new VideoUpdaterBadVideoIdException()
+    //         ),
+    //         $this->createMockThrowsException(
+    //             ThumbnailUploader::class,
+    //             'upload',
+    //             new ThumbnailUploaderBadVideoIdException()
+    //         )
+    //     );
+
+    //     $this->assertPosterReturnsVideoId($videoId, $poster);
+    // }
+
+    protected function assertYoutubeVideoUploadExpectionCallsLogger(Exception $exception, string $loggerMethod): void
     {
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects(self::once())->method($loggerMethod);
 
-        $heropostPoster = $this->createMock(Poster::class);
-        $heropostPoster
-            ->expects(self::once())
-            ->method('post')
-            ->willThrowException($exception)
-        ;
-
         $poster = new VideoPoster(
             $logger,
-            $heropostPoster,
+            $this->createMockThrowsException(Poster::class, 'post', $exception),
             $this->createNeverCalledMock(VideoUpdater::class),
             $this->createNeverCalledMock(ThumbnailUploader::class)
         );
@@ -62,7 +89,17 @@ class VideoPosterTest extends TestCase
 
     protected function assertPosterReturnsNull(VideoPoster $poster): void
     {
-        self::assertSame(null, $poster->postUsingAccessToken(
+        $this->assertPosterReturns(null, $poster);
+    }
+
+    protected function assertPosterReturnsVideoId(string $videoId, VideoPoster $poster): void
+    {
+        $this->assertPosterReturns($videoId, $poster);
+    }
+
+    protected function assertPosterReturns(mixed $expected, VideoPoster $poster): void
+    {
+        self::assertSame($expected, $poster->postUsingAccessToken(
             'login',
             'password',
             'youtubeChannelId',
@@ -89,10 +126,22 @@ class VideoPosterTest extends TestCase
         return $mock;
     }
 
+    protected function createMockThrowsException(
+        string $originalClassName,
+        string $methodName,
+        Exception $exception
+    ): MockObject
+    {
+        $mock = $this->createMock($originalClassName);
+        $mock->expects(self::once())->method($methodName)->willThrowException($exception);
+
+        return $mock;
+    }
+
     /**
      * @return Exception[][]
      */
-    public function provideBrokenVideoUploadExceptions(): array
+    public function provideBrokenYoutubeVideoUploadExceptions(): array
     {
         return [
             [new AccountNotSetupOrQuotaExceededException()],
@@ -105,7 +154,7 @@ class VideoPosterTest extends TestCase
     /**
      * @return Exception[][]
      */
-    public function provideMaybeBrokenVideoUploadExceptions(): array
+    public function provideMaybeBrokenYoutubeVideoUploadExceptions(): array
     {
         return [
             [new MaybeAlreadyPostedButScrapingException()]
