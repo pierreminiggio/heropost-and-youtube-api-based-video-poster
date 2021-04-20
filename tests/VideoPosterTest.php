@@ -2,6 +2,7 @@
 
 namespace PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPosterTest;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 use PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster\Video;
 use PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster\VideoPoster;
@@ -16,7 +17,10 @@ use Psr\Log\LoggerInterface;
 class VideoPosterTest extends TestCase
 {
 
-    public function testBrokenUpload(): void
+    /**
+     * @dataProvider provideVideoUploadExceptions
+     */
+    public function testBrokenVideoUpload(Exception $exception): void
     {
 
         $logger = $this->createMock(LoggerInterface::class);
@@ -26,7 +30,7 @@ class VideoPosterTest extends TestCase
         $heropostPoster
             ->expects(self::once())
             ->method('post')
-            ->willThrowException(new AccountNotSetupOrQuotaExceededException())
+            ->willThrowException($exception)
         ;
 
         $videoUpdater = $this->createMock(VideoUpdater::class);
@@ -59,5 +63,15 @@ class VideoPosterTest extends TestCase
             ),
             'accessToken'
         ));
+    }
+
+    /**
+     * @return Exception[][]
+     */
+    public function provideVideoUploadExceptions(): array
+    {
+        return [
+            [new AccountNotSetupOrQuotaExceededException()]
+        ];
     }
 }
