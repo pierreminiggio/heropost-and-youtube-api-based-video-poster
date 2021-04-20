@@ -2,6 +2,7 @@
 
 namespace PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster;
 
+use Exception;
 use PierreMiniggio\HeropostYoutubePosting\Exception\HeropostConfigurationException;
 use PierreMiniggio\HeropostYoutubePosting\Exception\MaybeAlreadyPostedButScrapingException;
 use PierreMiniggio\HeropostYoutubePosting\Exception\ScrapingException;
@@ -28,7 +29,7 @@ class VideoPoster
         string $herpostPassword,
         string $youtubeChannelId,
         Video $video,
-        string $acessToken
+        string $accessToken
     ): ?string
     {
 
@@ -54,20 +55,31 @@ class VideoPoster
             return null;
         }
 
-        $this->videoUpdater->update(
-            $acessToken,
-            $youtubeVideoId,
-            $youtubeVideo->title,
-            $youtubeVideo->description,
-            $video->tags,
-            $youtubeVideo->categoryId,
-            $youtubeVideo->selfDeclaredMadeForKids
-        );
+        try {
+            $this->videoUpdater->update(
+                $accessToken,
+                $youtubeVideoId,
+                $youtubeVideo->title,
+                $youtubeVideo->description,
+                $video->tags,
+                $youtubeVideo->categoryId,
+                $video->selfDeclaredMadeForKids
+            );
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage(), $e->getTrace());
+        }
+        
 
-        $this->thumbnailUploader->upload(
-            $acessToken,
-            $youtubeVideoId,
-            $video->thumbnailFilePath
-        );
+        try {
+            $this->thumbnailUploader->upload(
+                $accessToken,
+                $youtubeVideoId,
+                $video->thumbnailFilePath
+            );
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage(), $e->getTrace());
+        }
+
+        return $youtubeVideoId;
     }
 }

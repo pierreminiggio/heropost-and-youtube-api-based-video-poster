@@ -171,12 +171,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pierreminiggio/youtube-video-updater.git",
-                "reference": "ed32767c25efec92cb9d016cecf5c479e4ad2599"
+                "reference": "beff52f0911a4f6a4ba1bfe966af88ff44003095"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pierreminiggio/youtube-video-updater/zipball/ed32767c25efec92cb9d016cecf5c479e4ad2599",
-                "reference": "ed32767c25efec92cb9d016cecf5c479e4ad2599",
+                "url": "https://api.github.com/repos/pierreminiggio/youtube-video-updater/zipball/beff52f0911a4f6a4ba1bfe966af88ff44003095",
+                "reference": "beff52f0911a4f6a4ba1bfe966af88ff44003095",
                 "shasum": ""
             },
             "require": {
@@ -198,9 +198,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pierreminiggio/youtube-video-updater/issues",
-                "source": "https://github.com/pierreminiggio/youtube-video-updater/tree/1.0.1"
+                "source": "https://github.com/pierreminiggio/youtube-video-updater/tree/main"
             },
-            "time": "2021-04-20T10:43:05+00:00"
+            "time": "2021-04-20T15:50:34+00:00"
         },
         {
             "name": "psr/log",

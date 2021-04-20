@@ -41,36 +41,37 @@ class VideoPosterTest extends TestCase
         $this->assertYoutubeVideoUploadExpectionCallsLogger($exception, 'error');
     }
 
-    // public function testYoutubeVideoUploadSucceededAndVideoUpdateFailedAndThumbnailUploadFailed(): void
-    // {
-    //     $logger = $this->createMock(LoggerInterface::class);
-    //     $logger->expects(self::never())->method('emergency');
+    public function testYoutubeVideoUploadSucceededAndVideoUpdateFailedAndThumbnailUploadFailed(): void
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects(self::never())->method('emergency');
+        $logger->expects(self::exactly(2))->method('error');
 
-    //     $videoId = 'yIucwdfnZIM';
-    //     $heropostPoster = $this->createMock(Poster::class);
-    //     $heropostPoster
-    //         ->expects(self::once())
-    //         ->method('post')
-    //         ->willReturn($videoId)
-    //     ;
+        $videoId = 'yIucwdfnZIM';
+        $heropostPoster = $this->createMock(Poster::class);
+        $heropostPoster
+            ->expects(self::once())
+            ->method('post')
+            ->willReturn($videoId)
+        ;
 
-    //     $poster = new VideoPoster(
-    //         $logger,
-    //         $heropostPoster,
-    //         $this->createMockThrowsException(
-    //             VideoUpdater::class,
-    //             'update',
-    //             new VideoUpdaterBadVideoIdException()
-    //         ),
-    //         $this->createMockThrowsException(
-    //             ThumbnailUploader::class,
-    //             'upload',
-    //             new ThumbnailUploaderBadVideoIdException()
-    //         )
-    //     );
+        $poster = new VideoPoster(
+            $logger,
+            $heropostPoster,
+            $this->createMockThrowsException(
+                VideoUpdater::class,
+                'update',
+                new VideoUpdaterBadVideoIdException()
+            ),
+            $this->createMockThrowsException(
+                ThumbnailUploader::class,
+                'upload',
+                new ThumbnailUploaderBadVideoIdException()
+            )
+        );
 
-    //     $this->assertPosterReturnsVideoId($videoId, $poster);
-    // }
+        $this->assertPosterReturnsVideoId($videoId, $poster);
+    }
 
     protected function assertYoutubeVideoUploadExpectionCallsLogger(Exception $exception, string $loggerMethod): void
     {
