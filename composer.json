@@ -29,7 +29,8 @@
     "scripts": {
         "post-install-cmd": [
             "bash post-install.sh"
-        ]
+        ],
+        "test": "bash vendor/bin/phpunit tests/"
     },
     "scripts-descriptions": {
         "test": "Run all tests!"
