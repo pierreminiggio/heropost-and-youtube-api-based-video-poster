@@ -3,6 +3,7 @@
 namespace PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster;
 
 use PierreMiniggio\HeropostYoutubePosting\Exception\HeropostConfigurationException;
+use PierreMiniggio\HeropostYoutubePosting\Exception\MaybeAlreadyPostedButScrapingException;
 use PierreMiniggio\HeropostYoutubePosting\Exception\ScrapingException;
 use PierreMiniggio\HeropostYoutubePosting\Exception\UnknownHeropostException;
 use PierreMiniggio\HeropostYoutubePosting\Poster;
@@ -45,6 +46,10 @@ class VideoPoster
             HeropostConfigurationException | UnknownHeropostException | ScrapingException $e
         ) {
             $this->logger->emergency($e->getMessage(), $e->getTrace());
+
+            return null;
+        } catch (MaybeAlreadyPostedButScrapingException $e) {
+            $this->logger->error($e->getMessage(), $e->getTrace());
 
             return null;
         }

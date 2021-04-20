@@ -3,10 +3,12 @@
 namespace PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPosterTest;
 
 use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster\Video;
 use PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster\VideoPoster;
 use PierreMiniggio\HeropostYoutubePosting\Exception\AccountNotSetupOrQuotaExceededException;
+use PierreMiniggio\HeropostYoutubePosting\Exception\MaybeAlreadyPostedButScrapingException;
 use PierreMiniggio\HeropostYoutubePosting\Exception\QuotaExceededException;
 use PierreMiniggio\HeropostYoutubePosting\Exception\ScrapingException;
 use PierreMiniggio\HeropostYoutubePosting\Exception\UnknownHeropostException;
@@ -21,13 +23,25 @@ class VideoPosterTest extends TestCase
 {
 
     /**
-     * @dataProvider provideVideoUploadExceptions
+     * @dataProvider provideBrokenVideoUploadExceptions
      */
     public function testBrokenVideoUpload(Exception $exception): void
     {
+        $this->assertVideoUploadExpectionCallsLogger($exception, 'emergency');
+    }
 
+    /**
+     * @dataProvider provideMaybeBrokenVideoUploadExceptions
+     */
+    public function testMaybeBrokenVideoUpload(Exception $exception): void
+    {
+        $this->assertVideoUploadExpectionCallsLogger($exception, 'error');
+    }
+
+    protected function assertVideoUploadExpectionCallsLogger(Exception $exception, string $loggerMethod): void
+    {
         $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects(self::once())->method('emergency');
+        $logger->expects(self::once())->method($loggerMethod);
 
         $heropostPoster = $this->createMock(Poster::class);
         $heropostPoster
@@ -67,7 +81,7 @@ class VideoPosterTest extends TestCase
         ));
     }
 
-    protected function createNeverCalledMock(string $originalClassName)
+    protected function createNeverCalledMock(string $originalClassName): MockObject
     {
         $mock = $this->createMock($originalClassName);
         $mock->expects(self::never())->method(self::anything());
@@ -78,13 +92,23 @@ class VideoPosterTest extends TestCase
     /**
      * @return Exception[][]
      */
-    public function provideVideoUploadExceptions(): array
+    public function provideBrokenVideoUploadExceptions(): array
     {
         return [
             [new AccountNotSetupOrQuotaExceededException()],
             [new QuotaExceededException()],
             [new ScrapingException()],
             [new UnknownHeropostException()]
+        ];
+    }
+
+    /**
+     * @return Exception[][]
+     */
+    public function provideMaybeBrokenVideoUploadExceptions(): array
+    {
+        return [
+            [new MaybeAlreadyPostedButScrapingException()]
         ];
     }
 }
