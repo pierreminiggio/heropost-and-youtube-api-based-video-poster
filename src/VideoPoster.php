@@ -24,7 +24,7 @@ class VideoPoster
     {
     }
 
-    public function postUsingAccessToken(
+    public function post(
         string $heropostLogin,
         string $herpostPassword,
         string $youtubeChannelId,

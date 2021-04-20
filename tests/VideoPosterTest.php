@@ -149,7 +149,7 @@ class VideoPosterTest extends TestCase
 
     protected function assertPosterReturns(mixed $expected, VideoPoster $poster): void
     {
-        self::assertSame($expected, $poster->postUsingAccessToken(
+        self::assertSame($expected, $poster->post(
             'login',
             'password',
             'youtubeChannelId',

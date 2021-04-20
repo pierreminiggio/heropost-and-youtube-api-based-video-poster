@@ -14,7 +14,6 @@
         "psr/log": "1.1.x-dev",
         "pierreminiggio/heropost-youtube-posting": "dev-main",
         "pierreminiggio/youtube-thumbnail-uploader": "dev-main",
-        "pierreminiggio/google-api-get-access-token-from-refresh-token": "dev-main",
         "pierreminiggio/youtube-video-updater": "dev-main"
     },
     "autoload": {
