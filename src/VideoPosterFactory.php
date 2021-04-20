@@ -2,6 +2,7 @@
 
 namespace PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster;
 
+use PierreMiniggio\GoogleTokenRefresher\AccessTokenProvider;
 use PierreMiniggio\HeropostYoutubePosting\JSExecutor;
 use PierreMiniggio\HeropostYoutubePosting\Poster;
 use PierreMiniggio\YoutubeThumbnailUploader\ThumbnailUploader;
@@ -16,6 +17,7 @@ class VideoPosterFactory
         return new VideoPoster(
             $logger,
             new Poster(new JSExecutor()),
+            new AccessTokenProvider(),
             new VideoUpdater(),
             new ThumbnailUploader()
         );
