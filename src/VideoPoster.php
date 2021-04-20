@@ -68,7 +68,6 @@ class VideoPoster
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), $e->getTrace());
         }
-        
 
         try {
             $this->thumbnailUploader->upload(

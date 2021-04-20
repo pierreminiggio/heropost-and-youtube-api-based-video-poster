@@ -16,6 +16,7 @@ use PierreMiniggio\HeropostYoutubePosting\Poster;
 use PierreMiniggio\HeropostYoutubePosting\YoutubeCategoriesEnum;
 use PierreMiniggio\HeropostYoutubePosting\YoutubeVideo;
 use PierreMiniggio\YoutubeThumbnailUploader\Exception\BadVideoIdException as ThumbnailUploaderBadVideoIdException;
+use PierreMiniggio\YoutubeThumbnailUploader\Exception\ThumbnailFeatureNotAvailableException;
 use PierreMiniggio\YoutubeThumbnailUploader\ThumbnailUploader;
 use PierreMiniggio\YoutubeVideoUpdater\Exception\BadVideoIdException as VideoUpdaterBadVideoIdException;
 use PierreMiniggio\YoutubeVideoUpdater\VideoUpdater;
@@ -43,34 +44,42 @@ class VideoPosterTest extends TestCase
 
     public function testYoutubeVideoUploadSucceededAndVideoUpdateFailedAndThumbnailUploadFailed(): void
     {
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects(self::never())->method('emergency');
-        $logger->expects(self::exactly(2))->method('error');
+        foreach ($this->provideVideoUpdaterExceptions() as $videoUpdaterExceptions) {
+            $videoUpdaterException = $videoUpdaterExceptions[0];
 
-        $videoId = 'yIucwdfnZIM';
-        $heropostPoster = $this->createMock(Poster::class);
-        $heropostPoster
-            ->expects(self::once())
-            ->method('post')
-            ->willReturn($videoId)
-        ;
+            foreach ($this->provideThumbnailUploaderExceptions() as $thumbnailUploaderExceptions) {
+                $thumbnailUploaderException = $thumbnailUploaderExceptions[0];
 
-        $poster = new VideoPoster(
-            $logger,
-            $heropostPoster,
-            $this->createMockThrowsException(
-                VideoUpdater::class,
-                'update',
-                new VideoUpdaterBadVideoIdException()
-            ),
-            $this->createMockThrowsException(
-                ThumbnailUploader::class,
-                'upload',
-                new ThumbnailUploaderBadVideoIdException()
-            )
-        );
+                $logger = $this->createMock(LoggerInterface::class);
+                $logger->expects(self::never())->method('emergency');
+                $logger->expects(self::exactly(2))->method('error');
 
-        $this->assertPosterReturnsVideoId($videoId, $poster);
+                $videoId = 'yIucwdfnZIM';
+                $heropostPoster = $this->createMock(Poster::class);
+                $heropostPoster
+                    ->expects(self::once())
+                    ->method('post')
+                    ->willReturn($videoId)
+                ;
+
+                $poster = new VideoPoster(
+                    $logger,
+                    $heropostPoster,
+                    $this->createMockThrowsException(
+                        VideoUpdater::class,
+                        'update',
+                        $videoUpdaterException
+                    ),
+                    $this->createMockThrowsException(
+                        ThumbnailUploader::class,
+                        'upload',
+                        $thumbnailUploaderException
+                    )
+                );
+
+                $this->assertPosterReturnsVideoId($videoId, $poster);
+            }
+        }
     }
 
     protected function assertYoutubeVideoUploadExpectionCallsLogger(Exception $exception, string $loggerMethod): void
@@ -159,6 +168,29 @@ class VideoPosterTest extends TestCase
     {
         return [
             [new MaybeAlreadyPostedButScrapingException()]
+        ];
+    }
+
+    /**
+     * @return Exception[][]
+     */
+    public function provideVideoUpdaterExceptions(): array
+    {
+        return [
+            [new VideoUpdaterBadVideoIdException()],
+            [new RuntimeException()]
+        ];
+    }
+
+    /**
+     * @return Exception[][]
+     */
+    public function provideThumbnailUploaderExceptions(): array
+    {
+        return [
+            [new ThumbnailUploaderBadVideoIdException()],
+            [new RuntimeException()],
+            [new ThumbnailFeatureNotAvailableException()]
         ];
     }
 }
