@@ -7,6 +7,9 @@ use PHPUnit\Framework\TestCase;
 use PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster\Video;
 use PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster\VideoPoster;
 use PierreMiniggio\HeropostYoutubePosting\Exception\AccountNotSetupOrQuotaExceededException;
+use PierreMiniggio\HeropostYoutubePosting\Exception\QuotaExceededException;
+use PierreMiniggio\HeropostYoutubePosting\Exception\ScrapingException;
+use PierreMiniggio\HeropostYoutubePosting\Exception\UnknownHeropostException;
 use PierreMiniggio\HeropostYoutubePosting\Poster;
 use PierreMiniggio\HeropostYoutubePosting\YoutubeCategoriesEnum;
 use PierreMiniggio\HeropostYoutubePosting\YoutubeVideo;
@@ -71,7 +74,10 @@ class VideoPosterTest extends TestCase
     public function provideVideoUploadExceptions(): array
     {
         return [
-            [new AccountNotSetupOrQuotaExceededException()]
+            [new AccountNotSetupOrQuotaExceededException()],
+            [new QuotaExceededException()],
+            [new ScrapingException()],
+            [new UnknownHeropostException()]
         ];
     }
 }

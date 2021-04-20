@@ -3,6 +3,8 @@
 namespace PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster;
 
 use PierreMiniggio\HeropostYoutubePosting\Exception\HeropostConfigurationException;
+use PierreMiniggio\HeropostYoutubePosting\Exception\ScrapingException;
+use PierreMiniggio\HeropostYoutubePosting\Exception\UnknownHeropostException;
 use PierreMiniggio\HeropostYoutubePosting\Poster;
 use PierreMiniggio\YoutubeThumbnailUploader\ThumbnailUploader;
 use PierreMiniggio\YoutubeVideoUpdater\VideoUpdater;
@@ -39,8 +41,11 @@ class VideoPoster
                 $youtubeVideo,
                 $video->videoFilePath
             );
-        } catch (HeropostConfigurationException $e) {
+        } catch (
+            HeropostConfigurationException | UnknownHeropostException | ScrapingException $e
+        ) {
             $this->logger->emergency($e->getMessage(), $e->getTrace());
+
             return null;
         }
 
