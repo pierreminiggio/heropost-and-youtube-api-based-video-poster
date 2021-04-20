@@ -36,17 +36,11 @@ class VideoPosterTest extends TestCase
             ->willThrowException($exception)
         ;
 
-        $videoUpdater = $this->createMock(VideoUpdater::class);
-        $videoUpdater->expects(self::never())->method(self::anything());
-
-        $thumbnailUploader = $this->createMock(ThumbnailUploader::class);
-        $thumbnailUploader->expects(self::never())->method(self::anything());
-
         $poster = new VideoPoster(
             $logger,
             $heropostPoster,
-            $videoUpdater,
-            $thumbnailUploader
+            $this->createNeverCalledMock(VideoUpdater::class),
+            $this->createNeverCalledMock(ThumbnailUploader::class)
         );
 
         $this->assertPosterReturnsNull($poster);
@@ -71,6 +65,14 @@ class VideoPosterTest extends TestCase
             ),
             'accessToken'
         ));
+    }
+
+    protected function createNeverCalledMock(string $originalClassName)
+    {
+        $mock = $this->createMock($originalClassName);
+        $mock->expects(self::never())->method(self::anything());
+
+        return $mock;
     }
 
     /**
