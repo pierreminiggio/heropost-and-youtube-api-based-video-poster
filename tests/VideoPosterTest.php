@@ -6,6 +6,7 @@ use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PierreMiniggio\GoogleTokenRefresher\AccessTokenProvider;
+use PierreMiniggio\GoogleTokenRefresher\AuthException;
 use PierreMiniggio\GoogleTokenRefresher\GoogleClient;
 use PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster\Video;
 use PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster\VideoPoster;
@@ -124,6 +125,26 @@ class VideoPosterTest extends TestCase
                 $videoUpdaterExceptions
             ),
             $this->createMockMethodCalledOnce(ThumbnailUploader::class, 'upload'),
+        );
+
+        $this->assertPosterReturnsVideoId($videoId, $poster);
+    }
+
+    /**
+     * @dataProvider provideTokenProviderExceptions
+     */
+    public function testNothingCalledAndIdReturnedIfProviderFailed(
+        Exception $tokenProviderException
+    ): void
+    {
+        $videoId = 'yIucwdfnZIM';
+
+        $poster = new VideoPoster(
+            $this->createMockMethodCalledOnce(LoggerInterface::class, 'error'),
+            $this->createPosterMockReturnsVideoId($videoId),
+            $this->createMockThrowsException(AccessTokenProvider::class, 'getFromClient', $tokenProviderException),
+            $this->createNeverCalledMock(VideoUpdater::class),
+            $this->createNeverCalledMock(ThumbnailUploader::class)
         );
 
         $this->assertPosterReturnsVideoId($videoId, $poster);
@@ -299,6 +320,17 @@ class VideoPosterTest extends TestCase
             [new ThumbnailUploaderBadVideoIdException()],
             [new RuntimeException()],
             [new ThumbnailFeatureNotAvailableException()]
+        ];
+    }
+
+    /**
+     * @return Exception[][]
+     */
+    public function provideTokenProviderExceptions(): array
+    {
+        return [
+            [new AuthException()],
+            [new RuntimeException()]
         ];
     }
 }

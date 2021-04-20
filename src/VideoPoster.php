@@ -63,7 +63,7 @@ class VideoPoster
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), $e->getTrace());
 
-            return null;
+            return $youtubeVideoId;
         }
         
 
