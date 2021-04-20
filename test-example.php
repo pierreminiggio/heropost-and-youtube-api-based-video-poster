@@ -59,7 +59,7 @@ class TestLogger implements LoggerInterface
 }
 
 $poster = (new VideoPosterFactory())->make(new TestLogger());
-$poster->post(
+var_dump($poster->post(
     'login',
     'password',
     'youtubeChannelId',
@@ -79,4 +79,4 @@ $poster->post(
         'clientSecret',
         'refreshToken'
     )
-);
+));
