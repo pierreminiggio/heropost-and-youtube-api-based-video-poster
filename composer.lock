@@ -50,12 +50,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pierreminiggio/php-heropost-youtube-posting.git",
-                "reference": "d6e1d01988829978d6bae496951710f625e714fa"
+                "reference": "1769ae180d62ca1188b55fc7057513d7ba85cff8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pierreminiggio/php-heropost-youtube-posting/zipball/d6e1d01988829978d6bae496951710f625e714fa",
-                "reference": "d6e1d01988829978d6bae496951710f625e714fa",
+                "url": "https://api.github.com/repos/pierreminiggio/php-heropost-youtube-posting/zipball/1769ae180d62ca1188b55fc7057513d7ba85cff8",
+                "reference": "1769ae180d62ca1188b55fc7057513d7ba85cff8",
                 "shasum": ""
             },
             "require": {
@@ -83,9 +83,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pierreminiggio/php-heropost-youtube-posting/issues",
-                "source": "https://github.com/pierreminiggio/php-heropost-youtube-posting/tree/1.0.0"
+                "source": "https://github.com/pierreminiggio/php-heropost-youtube-posting/tree/1.0.1"
             },
-            "time": "2021-04-19T21:31:33+00:00"
+            "time": "2021-04-21T17:00:37+00:00"
         },
         {
             "name": "pierreminiggio/youtube-thumbnail-uploader",
