@@ -39,11 +39,13 @@ class VideoPoster
         $youtubeVideo = $video->youtubeVideo;
 
         try {
+            $videoWithoutDescription = clone $youtubeVideo;
+            $videoWithoutDescription->description = 'Une epique description';
             $youtubeVideoId = $this->heropostPoster->post(
                 $heropostLogin,
                 $herpostPassword,
                 $youtubeChannelId,
-                $youtubeVideo,
+                $videoWithoutDescription,
                 $video->videoFilePath
             );
         } catch (
