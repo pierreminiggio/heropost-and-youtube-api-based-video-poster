@@ -3,6 +3,7 @@
 namespace PierreMiniggio\HeropostAndYoutubeAPIBasedVideoPoster;
 
 use Exception;
+use Illuminate\Support\Str;
 use PierreMiniggio\GoogleTokenRefresher\AccessTokenProvider;
 use PierreMiniggio\GoogleTokenRefresher\GoogleClient;
 use PierreMiniggio\HeropostYoutubePosting\Exception\HeropostConfigurationException;
@@ -41,6 +42,7 @@ class VideoPoster
         try {
             $videoWithoutDescription = clone $youtubeVideo;
             $videoWithoutDescription->description = 'Une epique description';
+            $videoWithoutDescription->title = Str::slug($videoWithoutDescription->title, ' ');
             $youtubeVideoId = $this->heropostPoster->post(
                 $heropostLogin,
                 $herpostPassword,
