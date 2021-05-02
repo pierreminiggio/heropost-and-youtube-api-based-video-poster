@@ -105,6 +105,22 @@ class VideoPosterTest extends TestCase
         $this->assertPosterReturnsVideoId($videoId, $poster);
     }
 
+    public function testYoutubeVideoUploadSucceededAndVideoUpdateSucceededAndNoThumbnailUpload(): void
+    {
+
+        $videoId = 'yIucwdfnZIM';
+
+        $poster = new VideoPoster(
+            $this->createNeverCalledMock(LoggerInterface::class),
+            $this->createPosterMockReturnsVideoId($videoId),
+            $this->createTokenProviderMockReturnsToken('accessToken'),
+            $this->createMockMethodCalledOnce(VideoUpdater::class, 'update'),
+            $this->createNeverCalledMock(ThumbnailUploader::class, 'upload')
+        );
+
+        $this->assertPosterReturns($videoId, $poster, null);
+    }
+
     /**
      * @dataProvider provideThumbnailUploaderExceptions
      */
@@ -174,7 +190,11 @@ class VideoPosterTest extends TestCase
         $this->assertPosterReturns($videoId, $poster);
     }
 
-    protected function assertPosterReturns(mixed $expected, VideoPoster $poster): void
+    protected function assertPosterReturns(
+        mixed $expected,
+        VideoPoster $poster,
+        ?string $thumbnail = 'thumbnail.png'
+    ): void
     {
         self::assertSame($expected, $poster->post(
             'login',
@@ -189,7 +209,7 @@ class VideoPosterTest extends TestCase
                 ['tag1', 'tag2', 'tag3'],
                 false,
                 'video.mp4',
-                'thumbnail.png'
+                $thumbnail
             ),
             new GoogleClient(
                 'clientId',

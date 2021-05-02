@@ -85,6 +85,10 @@ class VideoPoster
             $this->logger->error($e->getMessage(), $e->getTrace());
         }
 
+        if ($video->thumbnailFilePath === null) {
+            return $youtubeVideoId;
+        }
+
         try {
             $this->thumbnailUploader->upload(
                 $accessToken,

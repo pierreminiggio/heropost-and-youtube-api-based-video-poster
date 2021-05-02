@@ -15,7 +15,7 @@ class Video
         public array $tags,
         public bool $selfDeclaredMadeForKids,
         public string $videoFilePath,
-        public string $thumbnailFilePath
+        public ?string $thumbnailFilePath = null
     )
     {
     }
