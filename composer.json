@@ -11,12 +11,12 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=8.0.0",
-        "psr/log": "1.1.x-dev",
         "pierreminiggio/heropost-youtube-posting": "dev-main",
         "pierreminiggio/youtube-thumbnail-uploader": "dev-main",
         "pierreminiggio/youtube-video-updater": "dev-main",
         "pierreminiggio/google-api-get-access-token-from-refresh-token": "dev-main",
-        "illuminate/support": "9.x-dev"
+        "illuminate/support": "9.x-dev",
+        "psr/log": "3.x-dev"
     },
     "autoload": {
         "psr-4": {
